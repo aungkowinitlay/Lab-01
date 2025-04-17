@@ -1,14 +1,34 @@
-name: Self-Hosted Runner Test
+name: Deploy to Local Machine
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  test:
+  deploy:
     runs-on: self-hosted
 
     steps:
-      - name: Say hello from VM
-        run: echo "✅ Hello from the VirtualBox self-hosted runner!"
+    - uses: actions/checkout@v3
+
+    - name: Build Frontend Docker Image
+      working-directory: ./frontend
+      run: docker build -t my-frontend-app .
+
+    - name: Run Frontend Docker Container
+      run: |
+        docker stop my-frontend-container || true
+        docker rm my-frontend-container || true
+        docker run -d --name my-frontend-container -p 8080:80 my-frontend-app
+
+    - name: Build Backend Docker Image
+      working-directory: ./backend
+      run: docker build -t my-backend-app .
+
+    - name: Run Backend Docker Container
+      run: |
+        docker stop my-backend-container || true
+        docker rm my-backend-container || true
+        docker run -d --name my-backend-container -p 5000:5000 my-backend-app
