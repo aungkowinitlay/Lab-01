@@ -21,7 +21,7 @@ jobs:
       run: |
         docker stop my-frontend-container || true
         docker rm my-frontend-container || true
-        docker run -d --name my-frontend-container -p 8080:80 my-frontend-app
+        docker run -d --name my-frontend-container -p 80:80 my-frontend-app
 
     - name: Build Backend Docker Image
       working-directory: ./backend
